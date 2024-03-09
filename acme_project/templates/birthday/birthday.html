@@ -8,25 +8,23 @@
     </div>
     <div class="card-body">
 <form method="post">
-    <!-- Добавьте тег csrf_token. Без него POST-запрос будет отклонён. -->
     {% csrf_token %}
-    <!-- Выводим поля формы с помощью специального тега. -->
     {% bootstrap_form form %}
-    <!-- Добавляем кнопку отправки данных. -->
     {% bootstrap_button button_type="submit" content="Отправить" %}
   </form>
     </div>
 </div>
-  <!-- Заменили метод запроса на POST. -->
-  {% with data=request.POST %}
-      {% if form.is_valid %}
-          <h2>Привет, {{ request.POST.first_name }} {{ request.POST.last_name }}</h2>
+    {% if form.is_valid %}
+      {% with data=form.instance %}
+          <hr>
+          ID новой записи в БД: {{ data.id }}
+          <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
           {% if birthday_countdown == 0 %}
-              С днём рождения!
+              <p>С днём рождения!</p>
           {% else %}
-              Осталось дней до дня рождения: {{ birthday_countdown }}!
+              <p>Осталось дней до дня рождения: {{ birthday_countdown }}!</p>
           {% endif %}
-      {% endif %}
-  {% endwith %}
+      {% endwith %}
+    {% endif %}
 {% endblock %}
 
