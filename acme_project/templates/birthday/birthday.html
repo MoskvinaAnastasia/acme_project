@@ -2,6 +2,16 @@
 {% load django_bootstrap5 %}
 
 {% block content %}
+  <!-- Если в пути запроса содержится строка /edit/. -->
+  <!-- Переносим тег with в самое начало блока content. -->
+  {% with data=form.instance %}
+  {% if '/edit/' in request.path %}
+  <!-- Вывести заголовок и номер записи. -->
+  <!-- Вместо form.instance подставляем data. -->
+  <h1>Редактировать запись {{ fdata.pk }}</h1>
+  {% else %}
+  <h1>Создать запись</h1>
+  {% endif %}
 <div class="card col-4">
     <div class="card-header">
       Калькулятор ожидания дня рождения
@@ -15,16 +25,16 @@
     </div>
 </div>
     {% if form.is_valid %}
-      {% with data=form.instance %}
-          <hr>
-          ID новой записи в БД: {{ data.id }}
-          <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
-          {% if birthday_countdown == 0 %}
-              <p>С днём рождения!</p>
-          {% else %}
-              <p>Осталось дней до дня рождения: {{ birthday_countdown }}!</p>
-          {% endif %}
-      {% endwith %}
+      ID новой записи в БД: {{ data.id }}
+      <hr>
+      <h2>Привет, {{ data.first_name }} {{ data.last_name }}</h2>
+      {% if birthday_countdown == 0 %}
+        <p>С днём рождения!</p>
+    {% else %}
+      <p>Осталось дней до дня рождения: {{ birthday_countdown }}!</p>
     {% endif %}
+    {% endif %}
+  {% endwith %}
 {% endblock %}
+
 
