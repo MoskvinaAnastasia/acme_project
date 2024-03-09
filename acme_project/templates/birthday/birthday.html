@@ -20,7 +20,7 @@
   <!-- Заменили метод запроса на POST. -->
   {% with data=request.POST %}
       {% if form.is_valid %}
-          <h2>Привет, {{ request.GET.first_name }} {{ request.GET.last_name }}</h2>
+          <h2>Привет, {{ request.POST.first_name }} {{ request.POST.last_name }}</h2>
           {% if birthday_countdown == 0 %}
               С днём рождения!
           {% else %}
