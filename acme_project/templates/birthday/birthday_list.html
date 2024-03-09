@@ -11,6 +11,7 @@
         указываем через namespace:name -->
       <div>
         <a href="{% url 'birthday:edit' birthday.id %}">Изменить запись</a>
+        <a href="{% url 'birthday:delete' birthday.id %}">Удалить запись</a>
       </div>
       {% if not forloop.last %}
         <hr>
