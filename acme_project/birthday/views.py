@@ -4,6 +4,8 @@ from .forms import BirthdayForm
 from .models import Birthday
 from .utils import calculate_birthday_countdown
 
+from django.core.paginator import Paginator
+
 
 def birthday(request, pk=None):
     if pk is not None:
@@ -27,11 +29,21 @@ def birthday(request, pk=None):
 
 
 def birthday_list(request):
-    # Получаем все объекты модели Birthday из БД.
-    birthdays = Birthday.objects.all()
-    # Передаём их в контекст шаблона.
-    context = {'birthdays': birthdays}
-    return render(request, 'birthday/birthday_list.html', context)
+    # Получаем список всех объектов с сортировкой по id.
+    birthdays = Birthday.objects.order_by('id')
+    # Создаём объект пагинатора с количеством 10 записей на страницу.
+    paginator = Paginator(birthdays, 3)
+    # Получаем из запроса значение параметра page.
+    page_number = request.GET.get('page')
+    # Получаем запрошенную страницу пагинатора. 
+    # Если параметра page нет в запросе или его значение не приводится к числу,
+    # вернётся первая страница.
+    page_obj = paginator.get_page(page_number)
+    # Вместо полного списка объектов передаём в контекст 
+    # объект страницы пагинатора
+    context = {'page_obj': page_obj}
+    return render(request, 'birthday/birthday_list.html', context) 
+
 
 
 def delete_birthday(request, pk):
