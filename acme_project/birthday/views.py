@@ -4,7 +4,7 @@ from .forms import BirthdayForm
 from .models import Birthday
 from .utils import calculate_birthday_countdown
 
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 from django.urls import reverse_lazy
 
 
@@ -28,18 +28,19 @@ def birthday(request, pk=None):
         context.update({'birthday_countdown': birthday_countdown})
     return render(request, 'birthday/birthday.html', context)
 
-class BirthdayCreateView(CreateView):
-    # Указываем модель, с которой работает CBV...
+
+class BirthdayMixin:
     model = Birthday
-    # Этот класс сам может создать форму на основе модели!
-    # Нет необходимости отдельно создавать форму через ModelForm.
-    # Указываем поля, которые должны быть в форме:
-    form_class = BirthdayForm
-    # Явным образом указываем шаблон:
-    template_name = 'birthday/birthday.html'
-    # Указываем namespace:name страницы, куда будет перенаправлен пользователь
-    # после создания объекта:
     success_url = reverse_lazy('birthday:list')
+
+
+class BirthdayFormMixin:
+    form_class = BirthdayForm
+    template_name = 'birthday/birthday.html'
+
+
+class BirthdayCreateView(BirthdayMixin, BirthdayFormMixin, CreateView):
+    pass
 
 
 # Наследуем класс от встроенного ListView:
@@ -52,25 +53,11 @@ class BirthdayListView(ListView):
     paginate_by = 3
 
 
-class BirthdayUpdateView(UpdateView):
-    model = Birthday
-    form_class = BirthdayForm
-    template_name = 'birthday/birthday.html'
-    success_url = reverse_lazy('birthday:list')
+class BirthdayUpdateView(BirthdayMixin, BirthdayFormMixin, UpdateView):
+    pass
 
 
-def delete_birthday(request, pk):
-    # Получаем объект модели или выбрасываем 404 ошибку.
-    instance = get_object_or_404(Birthday, pk=pk)
-    # В форму передаём только объект модели;
-    # передавать в форму параметры запроса не нужно.
-    form = BirthdayForm(instance=instance)
-    context = {'form': form}
-    # Если был получен POST-запрос...
-    if request.method == 'POST':
-        # ...удаляем объект:
-        instance.delete()
-        # ...и переадресовываем пользователя на страницу со списком записей.
-        return redirect('birthday:list')
-    # Если был получен GET-запрос — отображаем форму.
-    return render(request, 'birthday/birthday.html', context)
+class BirthdayDeleteView(BirthdayMixin, DeleteView):
+    pass
+
+
